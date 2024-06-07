@@ -1,21 +1,35 @@
-cmake_minimum_required(VERSION 3.10)
-project(ESP32Project)
+# Compiler
+CC = clang
+CXX = clang++
 
-set(CMAKE_CXX_STANDARD 11)
+# Compiler flags
+CFLAGS = -Wall -Wextra -Werror
+CXXFLAGS = $(CFLAGS) -std=c++11
 
-# Add source files here
-file(GLOB_RECURSE SOURCES "src/*.cpp")
-file(GLOB_RECURSE HEADERS "include/*.h")
+# Directories
+SRC_DIR = src
+INCLUDE_DIR = include
+EEPROM_INCLUDE_DIR = eeprom_include
+BUILD_DIR = build
 
-# Create the executable from the source files
-add_executable(your_executable ${SOURCES} ${HEADERS})
+# Files
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
+OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
+EXECUTABLE = your_executable
 
-# Enable testing
-enable_testing()
-add_test(NAME your_test COMMAND your_executable)
+# Targets
+.PHONY: all clean
 
-# Enable code coverage
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
-endif()
+all: $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(BUILD_DIR)/$@
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -I$(INCLUDE_DIR) -I$(EEPROM_INCLUDE_DIR) -c $< -o $@
+
+clean:
+	rm -rf $(BUILD_DIR)
+
+# Additional rules for tests, coverage, etc. can be added here
