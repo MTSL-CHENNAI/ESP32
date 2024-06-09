@@ -7,11 +7,8 @@ set(CMAKE_TOOLCHAIN_FILE $ENV{IDF_PATH}/tools/cmake/toolchain-esp32.cmake)
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
-# Add the main source directory
-add_subdirectory(src)
-
-# Define the executable
-add_executable(${PROJECT_NAME} src/main.cpp)
+# Add source files
+add_executable(${PROJECT_NAME} src/main.cpp src/flash.cpp src/uart.cpp src/wifi_user.cpp)
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE ${IDF_LIBRARIES})
