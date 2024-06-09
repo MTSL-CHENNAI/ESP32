@@ -1,35 +1,17 @@
-# Compiler
-CC = clang
-CXX = clang++
+cmake_minimum_required(VERSION 3.16)
+project(MyESP32Project)
 
-# Compiler flags
-CFLAGS = -Wall -Wextra -Werror
-CXXFLAGS = $(CFLAGS) -std=c++11
+# Define the toolchain file for ESP32 (assuming you have it setup correctly)
+set(CMAKE_TOOLCHAIN_FILE $ENV{IDF_PATH}/tools/cmake/toolchain-esp32.cmake)
 
-# Directories
-SRC_DIR = src
-INCLUDE_DIR = include
-EEPROM_INCLUDE_DIR = eeprom_include
-BUILD_DIR = build
+# Specify the C++ standard
+set(CMAKE_CXX_STANDARD 17)
 
-# Files
-SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
-OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
-EXECUTABLE = your_executable
+# Add the main source directory
+add_subdirectory(src)
 
-# Targets
-.PHONY: all clean
+# Define the executable
+add_executable(${PROJECT_NAME} src/main.cpp)
 
-all: $(EXECUTABLE)
-
-$(EXECUTABLE): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(BUILD_DIR)/$@
-
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) -I$(INCLUDE_DIR) -I$(EEPROM_INCLUDE_DIR) -c $< -o $@
-
-clean:
-	rm -rf $(BUILD_DIR)
-
-# Additional rules for tests, coverage, etc. can be added here
+# Link libraries
+target_link_libraries(${PROJECT_NAME} PRIVATE ${IDF_LIBRARIES})
